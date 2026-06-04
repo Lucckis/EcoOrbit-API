@@ -5,6 +5,7 @@ import com.ecoorbit.ecoorbit_api.DTO.request.LoginRequestDTO;
 import com.ecoorbit.ecoorbit_api.DTO.response.LoginResponseDTO;
 import com.ecoorbit.ecoorbit_api.entity.Usuario;
 import com.ecoorbit.ecoorbit_api.enums.Role;
+import com.ecoorbit.ecoorbit_api.messaging.UsuarioCriadoPublisher;
 import com.ecoorbit.ecoorbit_api.repository.UsuarioRepository;
 import com.ecoorbit.ecoorbit_api.security.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class AuthService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+    private final UsuarioCriadoPublisher publisher;
 
     public void registrar(CriarContaDTO dto) {
 
@@ -39,6 +41,7 @@ public class AuthService {
         usuario.setDataCadastro(LocalDateTime.now());
 
         usuarioRepository.save(usuario);
+        publisher.publicar(dto.email(), dto.nome());
     }
 
     public LoginResponseDTO login(LoginRequestDTO dto) {
