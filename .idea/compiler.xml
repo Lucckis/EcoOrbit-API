@@ -24,6 +24,7 @@
         </processorPath>
         <module name="ecoorbit_api_usuario" />
         <module name="ecoorbit_api_predict" />
+        <module name="ecoorbit_api_ia" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
