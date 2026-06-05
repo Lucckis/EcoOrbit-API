@@ -14,7 +14,6 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/analyze")
 public class WildfirePredictController {
     private final PredictionPipelineService predictionPipelineService;
 

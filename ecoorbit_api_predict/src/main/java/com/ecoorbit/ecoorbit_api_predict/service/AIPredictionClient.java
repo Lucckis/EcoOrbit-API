@@ -19,7 +19,7 @@ public class AIPredictionClient {
                               @Value("${api.flask}") String apiFlask) {
 
         this.webClient = webClientBuilder
-                .baseUrl(apiFlask + "/predict")
+                .baseUrl(apiFlask)
                 .build();
     }
 
