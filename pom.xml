@@ -12,6 +12,8 @@
     <modules>
         <module>ecoorbit_api_server</module>
         <module>ecoorbit_api_usuario</module>
+        <module>ecoorbit_api_predict</module>
+        <module>ecoorbit_api_ia</module>
     </modules>
 
     <properties>
