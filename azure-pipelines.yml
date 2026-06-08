@@ -1,0 +1,60 @@
+trigger:
+  - main
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: Build
+    displayName: "Build e Push para ACR"
+    jobs:
+      - job: BuildAndPush
+        steps:
+
+          - task: Docker@2
+            displayName: "Build e Push - ecoorbit_api_server"
+            inputs:
+              containerRegistry: 'javamssqlrm559607'
+              repository: 'ecoorbit-server'
+              command: 'buildAndPush'
+              Dockerfile: 'ecoorbit_api_server/Dockerfile'
+              buildContext: 'ecoorbit_api_server'
+              tags: |
+                $(Build.BuildId)
+                latest
+
+          - task: Docker@2
+            displayName: "Build e Push - ecoorbit_api_usuario"
+            inputs:
+              containerRegistry: 'javamssqlrm559607'
+              repository: 'ecoorbit-usuario'
+              command: 'buildAndPush'
+              Dockerfile: 'ecoorbit_api_usuario/Dockerfile'
+              buildContext: 'ecoorbit_api_usuario'
+              tags: |
+                $(Build.BuildId)
+                latest
+
+          - task: Docker@2
+            displayName: "Build e Push - ecoorbit_api_predict"
+            inputs:
+              containerRegistry: 'javamssqlrm559607'
+              repository: 'ecoorbit-predict'
+              command: 'buildAndPush'
+              Dockerfile: 'ecoorbit_api_predict/Dockerfile'
+              buildContext: 'ecoorbit_api_predict'
+              tags: |
+                $(Build.BuildId)
+                latest
+
+          - task: Docker@2
+            displayName: "Build e Push - ecoorbit_api_ia"
+            inputs:
+              containerRegistry: 'javamssqlrm559607'
+              repository: 'ecoorbit-ia'
+              command: 'buildAndPush'
+              Dockerfile: 'ecoorbit_api_ia/Dockerfile'
+              buildContext: 'ecoorbit_api_ia'
+              tags: |
+                $(Build.BuildId)
+                latest
