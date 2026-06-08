@@ -1,50 +1,51 @@
-services:
-  rabbitmq:
-    image: rabbitmq:3.13-management-alpine
-    container_name: ecoorbit_rabbitmq
-    restart: unless-stopped
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-guest}
+api_server:
+  build: ./ecoorbit_api_server
+  container_name: ecoorbit_api_server
+  ports:
+    - "8761:8761"
+  networks:
+    - ecoorbit_net
+
+  api_usuario:
+    build: ./ecoorbit_api_usuario
+    container_name: ecoorbit_api_usuario
     ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - "8080:8080"
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      DB_URL: jdbc:postgresql://postgres:5432/ecoorbit_db
+      DB_USERNAME: ${DB_USERNAME:-ecoorbit}
+      DB_PASSWORD: ${DB_PASSWORD:-123456}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     networks:
       - ecoorbit_net
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
-  postgres:
-    image: postgres:16-alpine
-    container_name: ecoorbit_postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${DB_USERNAME:-ecoorbit}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-123456}
-      POSTGRES_DB: ecoorbit_db
+  api_ia:
+    build: ./ecoorbit_api_ia
+    container_name: ecoorbit_api_ia
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "8082:8082"
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+    depends_on:
+      - api_server
     networks:
       - ecoorbit_net
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-ecoorbit} -d ecoorbit_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
-volumes:
-  rabbitmq_data:
-    name: ecoorbit_rabbitmq_data
-  postgres_data:
-    name: ecoorbit_postgres_data
-networks:
-  ecoorbit_net:
-    name: ecoorbit_network
-    driver: bridge
+  api_predict:
+    build: ./ecoorbit_api_predict
+    container_name: ecoorbit_api_predict
+    ports:
+      - "8083:8083"
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      API_FLASK: ${API_FLASK}
+    depends_on:
+      - api_server
+    networks:
+      - ecoorbit_net
